@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey;
 
 @Entity
 public class Data {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     public int uid;
 
     @ColumnInfo(name = "address")
@@ -24,7 +24,8 @@ public class Data {
     @ColumnInfo(name = "lng")
     public String lng ;     // 경도
 
-    public Data(String address, String centerName, String facilityName, String phoneNumber, String updatedAt, String lat, String lng) {
+    public Data(int uid, String address, String centerName, String facilityName, String phoneNumber, String updatedAt, String lat, String lng) {
+        this.uid = uid;
         this.address = address;
         this.centerName = centerName;
         this.facilityName = facilityName;
@@ -34,6 +35,69 @@ public class Data {
         this.lng = lng;
     }
 
+    // 게터세터...
 
+    public void setUid(int uid) {
+        this.uid = uid;
+    }
 
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setCenterName(String centerName) {
+        this.centerName = centerName;
+    }
+
+    public void setFacilityName(String facilityName) {
+        this.facilityName = facilityName;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setLat(String lat) {
+        this.lat = lat;
+    }
+
+    public void setLng(String lng) {
+        this.lng = lng;
+    }
+
+    public int getUid() {
+        return uid;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getCenterName() {
+        return centerName;
+    }
+
+    public String getFacilityName() {
+        return facilityName;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public String getLat() {
+        return lat;
+    }
+
+    public String getLng() {
+        return lng;
+    }
 }

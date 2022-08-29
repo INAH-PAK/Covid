@@ -16,8 +16,10 @@
         android:theme="@style/Theme.Covid"
         tools:targetApi="31"
         android:usesCleartextTraffic="true"
-        tools:replace="android:appComponentFactory"
-        android:appComponentFactory="whateverString">
+
+        >
+<!--        tools:replace="android:appComponentFactory"-->
+<!--        android:appComponentFactory="whateverString"-->
         <meta-data
             android:name="com.naver.maps.map.gu9jq14ykr"
             android:value="gu9jq14ykr" />

@@ -20,10 +20,14 @@ public interface DataDao {
     @Query("SELECT * FROM data WHERE uid IN (:userIds)")
     List<Data> loadAllByIds(int[] userIds);
 
+
     @Insert
     void insertAll(Data... data);
 
     @Delete
     void delete(Data data);
+
+    @Query("DELETE FROM data")
+    void deleteAll();
 
 }

@@ -12,8 +12,11 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.wookie_soft.covid.data.model.Data;
 
 
-@Database(entities = {Data.class}, version = 1)
+@Database(entities = {Data.class}, version = 1, exportSchema = true)
 public abstract class ApiDatabase extends RoomDatabase {
+    // DataBase : 데이터 베이스 이용을 위한 DAO 객체 획득 함수를 제공하는 클래스.
+    // 디비를 사용하기 위해 가장 먼저 호출 !!!
+
     private static ApiDatabase instance;
 
     public abstract DataDao getDataDao();
