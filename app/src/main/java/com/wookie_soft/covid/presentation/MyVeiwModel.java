@@ -14,6 +14,7 @@ import com.wookie_soft.covid.data.model.ApiResponse;
 import com.wookie_soft.covid.data.model.Data;
 import com.wookie_soft.covid.data.model.User;
 import com.wookie_soft.covid.data.repository.ApiDatabase;
+import com.wookie_soft.covid.data.repository.ApiRepository;
 import com.wookie_soft.covid.data.repository.DataDao;
 import com.wookie_soft.covid.data.repository.RetrofitService;
 import com.wookie_soft.covid.utils.RetrofitHelper;
@@ -29,18 +30,21 @@ public class MyVeiwModel extends AndroidViewModel {
     // AndroidViewModel :
     // https://developer.android.com/reference/androidx/lifecycle/AndroidViewModel?hl=ko
     //
-    private MutableLiveData<List<Data>> data;
-    private MutableLiveData<User> user;
 
+    private ApiRepository repository;
+    List<Data> data;
 
-    ApiDatabase db = Room.databaseBuilder(getApplication(),
-            ApiDatabase.class, "api-response").build();
-    DataDao dao = db.getDataDao();
 
     public MyVeiwModel(@NonNull Application application) {
         super(application);
+        repository = new ApiRepository(application);
+        data = repository.getAllData();
+    }
+    List<Data> getAllData(){
+        return data;
     }
 
+    //insert
     @NonNull
     @Override
     public <T extends Application> T getApplication() {
@@ -62,7 +66,7 @@ public class MyVeiwModel extends AndroidViewModel {
                 Log.i("api", response.body().data.get(0).address.toString());
                 if(response.isSuccessful()){
                     liveData.postValue(response.body().data); // 룸에 넣었음. 쓰는건 백그라운드 스레드에서 해야함 -> 이때 코루틴, RxJava
-                    new InsertDataThread(response.body().data).start();
+                   // new InsertDataThread(response.body().data).start();
 
                 }
             }
@@ -74,37 +78,25 @@ public class MyVeiwModel extends AndroidViewModel {
         return liveData;
     }
 
-    class InsertDataThread extends Thread{ // 네크워크 작업하는 스레드
-        List<Data> data;
-        public InsertDataThread(List<Data> data){
-            this.data = data;
-        }
-        @Override
-        public void run() {
-            dao.deleteAll(); // 기존 데이터 모두 삭제
-            dao.insertAll(data.toArray(new Data[data.size()]));
-            Log.i("sss",dao.getAll().toString());
-            List<Data> f = dao.getAll();
-            Log.i("room",f.get(0).address.toString());
+    // 내가 직접 구현한 스레드 -> Executors 를 사용하면 알아서 스레드만들어서 병렬처리 해줌.
+    // 데이터베이스 ㄱㄱ
+//
+//    class InsertDataThread extends Thread{ // 네크워크 작업하는 스레드
+//        List<Data> data;
+//        public InsertDataThread(List<Data> data){
+//            this.data = data;
+//        }
+//        @Override
+//        public void run() {
+//            dao.deleteAll(); // 기존 데이터 모두 삭제
+//            dao.insertAll(data.toArray(new Data[data.size()]));
+//            Log.i("sss",dao.getAll().toString());
+//            List<Data> f = dao.getAll();
+//            Log.i("room",f.get(0).address.toString());
+//
+//        }
+//    }
 
-        }
-    }
-
-
-    public LiveData<List<Data>> getData() {
-        if (data == null) {
-            data = new MutableLiveData<List<Data>>();
-            loadData();
-        }
-        return data;
-    }
-
-    public LiveData<User> getUser() {
-        if (user == null) {
-            user = new MutableLiveData<User>();
-        }
-        return user;
-    }
 
     private void loadData() {
 
