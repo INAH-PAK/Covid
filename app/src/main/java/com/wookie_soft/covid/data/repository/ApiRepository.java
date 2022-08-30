@@ -1,12 +1,22 @@
 package com.wookie_soft.covid.data.repository;
 
 import android.app.Application;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
+import com.wookie_soft.covid.data.model.ApiResponse;
 import com.wookie_soft.covid.data.model.Data;
+import com.wookie_soft.covid.utils.RetrofitHelper;
 
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class ApiRepository {
 
@@ -27,13 +37,88 @@ public class ApiRepository {
     }
     public List<Data> getAllData(){ return data;}
 
-    public void insert(List<Data> data){
-        ApiDatabase.databaseWriteExcutor.execute(()->{
-          //
+//    public void insertByExccutor(List<Data> data){
+//        ApiDatabase.databaseWriteExcutor.execute(()->{
+//            dao.deleteAll(); // 기존 데이터 모두 삭제
+//            dao.insertAll(data.toArray(new Data[data.size()])); // 룸에 데이터 넣으ㅁ
+//            Log.i("sss",dao.getAll().toString());
+//        });
+//    }
+
+
+
+    // 테스트 용으로 그냥 찍어보기 (레트로핏 )
+    public void getApiDataToString() {
+        String baseUrl = "https://api.odcloud.kr/api/";
+
+        Retrofit retrofit = RetrofitHelper.getRetrofit(baseUrl);
+        RetrofitService service = retrofit.create(RetrofitService.class);
+
+
+        Call<String> call = service.getApiToString("Pmg4W4DEq17wNe/4EabMJ28ZLWNet3tl3qwsXcm+8f6/MoQOlAenP3cBwR5lAF4z3g/5HnkFXgai/hnzcw5G7Q==");
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+
+                Log.i("api", response.body().toString());
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Log.i("api", t.toString());
+
+            }
         });
+
     }
 
+    //API에서 데이터 받아와서 룸에 저장
+    public List<Data> getApiDataToNet() {
+        String baseUrl = "https://api.odcloud.kr/api/";
 
+        Retrofit retrofit = RetrofitHelper.getRetrofit(baseUrl);
+        RetrofitService service = retrofit.create(RetrofitService.class);
+
+        Call<ApiResponse> call = service.getApiToData("Pmg4W4DEq17wNe/4EabMJ28ZLWNet3tl3qwsXcm+8f6/MoQOlAenP3cBwR5lAF4z3g/5HnkFXgai/hnzcw5G7Q==");
+        call.enqueue(new Callback<ApiResponse>() {
+            @Override
+            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+                Log.i("api", response.body().data.get(0).address.toString());
+                if(response.isSuccessful()){
+
+                  //  ApiDatabase.databaseWriteExcutor.execute();
+
+
+                //insertByExccutor(response.body().data);
+                     new InsertDataThread(response.body().data);
+                    data = response.body().data;
+
+                    //Log.i("fff",data.get(1).address.toString());
+
+                }
+            }
+            @Override
+            public void onFailure(Call<ApiResponse> call, Throwable t) {
+                Log.i("api","네트워크 서버 연결 실패 ");
+            }
+        });
+        return data;
+    }
+
+    class InsertDataThread extends Thread{ // 네크워크 작업하는 스레드
+        List<Data> data;
+        public InsertDataThread(List<Data> data){
+            this.data = data;
+        }
+        @Override
+        public void run() {
+            dao.deleteAll(); // 기존 데이터 모두 삭제
+            dao.insertAll(data.toArray(new Data[data.size()]));
+            Log.i("sss",dao.getAll().toString());
+            List<Data> f = dao.getAll();
+            Log.i("room",f.get(0).address.toString());
+        }
+    }
 
 
 

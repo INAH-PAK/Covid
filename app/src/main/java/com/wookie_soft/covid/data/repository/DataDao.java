@@ -1,6 +1,5 @@
 package com.wookie_soft.covid.data.repository;
 
-import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;

@@ -31,6 +31,7 @@ public class MyVeiwModel extends AndroidViewModel {
     // https://developer.android.com/reference/androidx/lifecycle/AndroidViewModel?hl=ko
     //
 
+    // 1. 
     private ApiRepository repository;
     List<Data> data;
 
@@ -51,51 +52,15 @@ public class MyVeiwModel extends AndroidViewModel {
         return super.getApplication();
     }
 
-    //API에서 데이터 받아와서 룸에 저장
-    public MutableLiveData<List<Data>> getApiDataToNet() {
-        String baseUrl = "https://api.odcloud.kr/api/";
-
-        Retrofit retrofit = RetrofitHelper.getRetrofit(baseUrl);
-        RetrofitService service = retrofit.create(RetrofitService.class);
-        MutableLiveData<List<Data>> liveData = new MutableLiveData<>();
-
-        Call<ApiResponse> call = service.getApiToData("Pmg4W4DEq17wNe/4EabMJ28ZLWNet3tl3qwsXcm+8f6/MoQOlAenP3cBwR5lAF4z3g/5HnkFXgai/hnzcw5G7Q==");
-        call.enqueue(new Callback<ApiResponse>() {
-            @Override
-            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
-                Log.i("api", response.body().data.get(0).address.toString());
-                if(response.isSuccessful()){
-                    liveData.postValue(response.body().data); // 룸에 넣었음. 쓰는건 백그라운드 스레드에서 해야함 -> 이때 코루틴, RxJava
-                   // new InsertDataThread(response.body().data).start();
-
-                }
-            }
-            @Override
-            public void onFailure(Call<ApiResponse> call, Throwable t) {
-                Log.i("api","네트워크 서버 연결 실패 ");
-            }
-        });
-        return liveData;
+    public void getApiDataToNet(){ //  레포지토리에서 레트로핏작업 해달라고 요청
+         repository.getApiDataToNet();
     }
+
 
     // 내가 직접 구현한 스레드 -> Executors 를 사용하면 알아서 스레드만들어서 병렬처리 해줌.
     // 데이터베이스 ㄱㄱ
-//
-//    class InsertDataThread extends Thread{ // 네크워크 작업하는 스레드
-//        List<Data> data;
-//        public InsertDataThread(List<Data> data){
-//            this.data = data;
-//        }
-//        @Override
-//        public void run() {
-//            dao.deleteAll(); // 기존 데이터 모두 삭제
-//            dao.insertAll(data.toArray(new Data[data.size()]));
-//            Log.i("sss",dao.getAll().toString());
-//            List<Data> f = dao.getAll();
-//            Log.i("room",f.get(0).address.toString());
-//
-//        }
-//    }
+
+
 
 
     private void loadData() {
@@ -109,30 +74,6 @@ public class MyVeiwModel extends AndroidViewModel {
 
     }
 
-    public void getApiDataToString() {
-        String baseUrl = "https://api.odcloud.kr/api/";
-
-        Retrofit retrofit = RetrofitHelper.getRetrofit(baseUrl);
-        RetrofitService service = retrofit.create(RetrofitService.class);
-
-
-        Call<String> call = service.getApiToString("Pmg4W4DEq17wNe/4EabMJ28ZLWNet3tl3qwsXcm+8f6/MoQOlAenP3cBwR5lAF4z3g/5HnkFXgai/hnzcw5G7Q==");
-        call.enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
-
-                Log.i("api", response.body().toString());
-            }
-
-            @Override
-            public void onFailure(Call<String> call, Throwable t) {
-                Log.i("api", t.toString());
-
-            }
-        });
-
-
-    }
 
 
 }

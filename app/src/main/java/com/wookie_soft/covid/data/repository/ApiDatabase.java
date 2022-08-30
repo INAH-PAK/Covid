@@ -28,7 +28,7 @@ public abstract class ApiDatabase extends RoomDatabase {
     public abstract DataDao getDataDao();
     public static final int NUMBER_OF_THREADS = 3; // 최대 스레드 수
 
-    // ExecutorService : java의 스레드 최상위 api
+    // ExecutorService : java의 스레드 최상위 api -> 다음에 RxJava로 ㄱㄱ
     public static final ExecutorService databaseWriteExcutor
             = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
@@ -36,6 +36,7 @@ public abstract class ApiDatabase extends RoomDatabase {
         if(instance == null){
             instance = Room.databaseBuilder(context.getApplicationContext(),
                     ApiDatabase.class,"api_database")
+                    .allowMainThreadQueries()
                     .fallbackToDestructiveMigration() // Migration : 이주, 이동 -> 이거 룸 충돌?나면 기존꺼 다 지워버리니까 앱 출시했으면 절대 안도opppㅐㅐㅔㅔ
                     .build();
         }

@@ -24,6 +24,7 @@ import com.wookie_soft.covid.databinding.ActivityMainBinding;
 import com.wookie_soft.covid.data.model.ApiResponse;
 import com.wookie_soft.covid.utils.RetrofitHelper;
 import com.wookie_soft.covid.data.repository.RetrofitService;
+import com.wookie_soft.covid.utils.SetViewModelFactory;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -57,22 +58,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
         // ViewModel 불러오기
-         vm = new ViewModelProvider(this).get(MyVeiwModel.class);
-         vm.getApiDataToNet();
-
+        vm = new ViewModelProvider(this,new SetViewModelFactory(getApplication()))
+                .get(MyVeiwModel.class);
+        vm.getApiDataToNet();
 
          final Observer<User> userObserver = new Observer<User>() {
              @Override
              public void onChanged(User user) {
-                 // 사용자의 위치 정보 변경시, 네이버 지도 좌표 업뎃.
+                 // 사용자의 위치 정보 변경시, 네이버 지도 좌표 업뎃. -> 반응형 코딩 ㄱㄱ
 
              }
          };
-
-        vm.getData().observe(this,data -> {
-            // 여기서 위치정보 가져오기
-
-        });
 
 
     }
