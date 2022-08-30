@@ -87,7 +87,7 @@ public class ApiRepository {
                 if(response.isSuccessful()){
 
                   //  ApiDatabase.databaseWriteExcutor.execute();
-
+ㄹ
 
                 //insertByExccutor(response.body().data);
                      new InsertDataThread(response.body().data);
