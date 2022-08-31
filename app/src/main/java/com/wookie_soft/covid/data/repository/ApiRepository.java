@@ -4,8 +4,6 @@ import android.app.Application;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.wookie_soft.covid.data.model.ApiResponse;
 import com.wookie_soft.covid.data.model.Data;
@@ -16,7 +14,6 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class ApiRepository {
 

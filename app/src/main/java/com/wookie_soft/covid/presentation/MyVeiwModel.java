@@ -1,32 +1,14 @@
 package com.wookie_soft.covid.presentation;
 
 import android.app.Application;
-import android.content.Context;
-import android.util.Log;
-import android.webkit.PermissionRequest;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.room.Room;
 
-import com.naver.maps.map.util.FusedLocationSource;
-import com.wookie_soft.covid.data.model.ApiResponse;
 import com.wookie_soft.covid.data.model.Data;
-import com.wookie_soft.covid.data.model.User;
-import com.wookie_soft.covid.data.repository.ApiDatabase;
 import com.wookie_soft.covid.data.repository.ApiRepository;
-import com.wookie_soft.covid.data.repository.DataDao;
-import com.wookie_soft.covid.data.repository.RetrofitService;
-import com.wookie_soft.covid.utils.RetrofitHelper;
 
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class MyVeiwModel extends AndroidViewModel {
     // AndroidViewModel :
@@ -34,8 +16,6 @@ public class MyVeiwModel extends AndroidViewModel {
 
     private ApiRepository repository;
     List<Data> data;
-
-
 
     public MyVeiwModel(@NonNull Application application) {
         super(application);
@@ -45,6 +25,8 @@ public class MyVeiwModel extends AndroidViewModel {
     List<Data> getAllData(){
         return data;
     }
+
+   // List<Marker> getAllLocation(){ return }
 
     //insert
     @NonNull
