@@ -3,6 +3,7 @@ package com.wookie_soft.covid.presentation;
 import android.app.Application;
 import android.content.Context;
 import android.util.Log;
+import android.webkit.PermissionRequest;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -10,6 +11,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.room.Room;
 
+import com.naver.maps.map.util.FusedLocationSource;
 import com.wookie_soft.covid.data.model.ApiResponse;
 import com.wookie_soft.covid.data.model.Data;
 import com.wookie_soft.covid.data.model.User;
@@ -29,11 +31,10 @@ import retrofit2.Retrofit;
 public class MyVeiwModel extends AndroidViewModel {
     // AndroidViewModel :
     // https://developer.android.com/reference/androidx/lifecycle/AndroidViewModel?hl=ko
-    //
 
-    // 1. 
     private ApiRepository repository;
     List<Data> data;
+
 
 
     public MyVeiwModel(@NonNull Application application) {
@@ -56,16 +57,8 @@ public class MyVeiwModel extends AndroidViewModel {
          repository.getApiDataToNet();
     }
 
+    // 위치 퍼미션
 
-    // 내가 직접 구현한 스레드 -> Executors 를 사용하면 알아서 스레드만들어서 병렬처리 해줌.
-    // 데이터베이스 ㄱㄱ
-
-
-
-
-    private void loadData() {
-
-    }
 
     // 버튼 클릭시 , 사용자의 현재 위치 업뎃
     public void onClickHandler() {
@@ -73,6 +66,7 @@ public class MyVeiwModel extends AndroidViewModel {
 
 
     }
+
 
 
 
