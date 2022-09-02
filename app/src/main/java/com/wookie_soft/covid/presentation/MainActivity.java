@@ -5,18 +5,22 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 
 import android.content.DialogInterface;
+import android.location.Location;
 import android.os.Bundle;
 
+import com.naver.maps.geometry.LatLng;
+import com.naver.maps.map.CameraUpdate;
+import com.naver.maps.map.LocationSource;
 import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapFragment;
 import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.NaverMapSdk;
 import com.naver.maps.map.OnMapReadyCallback;
+import com.naver.maps.map.overlay.LocationOverlay;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.wookie_soft.covid.R;
 import com.wookie_soft.covid.databinding.ActivityMainBinding;
@@ -30,15 +34,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private MyVeiwModel vm;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private FusedLocationSource locationSource;
+    private Location mlocation;
 
     private NaverMap naverMap;
 
     // RxJava
-// https://kangraemin.github.io/android/2021/10/17/rxjava-retrofit-room/
+    // https://kangraemin.github.io/android/2021/10/17/rxjava-retrofit-room/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // ViewModel 불러오기
+        vm = new ViewModelProvider(this,new SetViewModelFactory(getApplication()))
+                .get(MyVeiwModel.class);
+
+        vm.getApiDataToNet();
+
         binding = DataBindingUtil.setContentView(this,R.layout.activity_main);
+
+        binding.setViewmodel(vm);
+
 
         locationSource =
                 new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
@@ -56,10 +71,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment.getMapAsync(this);
 
 
-        // ViewModel 불러오기
-        vm = new ViewModelProvider(this,new SetViewModelFactory(getApplication()))
-                .get(MyVeiwModel.class);
-        vm.getApiDataToNet();
+
 
 
 //
@@ -86,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                // 위치 권한 다시 물어보기
+                                //
                                 dialog.dismiss();
                             }
                         }).create().show();
@@ -101,17 +113,45 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(@NonNull NaverMap naverMap) {
         this.naverMap = naverMap;
         naverMap.setNightModeEnabled(true);// 이쁜 야간모드 지원 ㅎㅎ
+
         naverMap.setLocationSource(locationSource);
         // 요기서 마커 불러오고.. 말풍선도 만들기..
-        naverMap.setLocationTrackingMode(LocationTrackingMode.NoFollow);
+        naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
+
+        naverMap.setMapType(NaverMap.MapType.Basic);
+
+
+
 
     }
 
-    private void initLocation(){
+    public void getLocationSource(){
+
+        naverMap.addOnLocationChangeListener(new NaverMap.OnLocationChangeListener() {
+            @Override
+            public void onLocationChange(@NonNull Location location) {
+               mlocation.set(location);
+
+                LatLng coord = new LatLng(location);
+
+                LocationOverlay locationOverlay = naverMap.getLocationOverlay();
+                locationOverlay.setVisible(true);
+                locationOverlay.setPosition(coord);
+                locationOverlay.setBearing(location.getBearing());
+
+                naverMap.moveCamera(CameraUpdate.scrollTo(coord));
 
 
+
+            }
+        });
 
     }
+
+
+
+
+
 
 
 
