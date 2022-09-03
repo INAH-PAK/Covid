@@ -5,27 +5,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     >
     <data>
+        <import type="com.wookie_soft.covid.presentation.MyVeiwModel"/>
         <variable
             name= "viewmodel"
-            type="com.wookie_soft.covid.presentation.MyVeiwModel"
+            type="MyVeiwModel"
         />
+
+
 
     </data>
     <LinearLayout
+        android:id="@+id/linear"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         tools:context=".presentation.MainActivity">
 
-        <Button
-            android:id="@+id/main_btn"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:backgroundTint="@color/white"
-            android:textColor="@color/black"
-            android:layout_margin="8dp"
-            android:onClick="@{()->viewmodel.onClickHandler()}"
-            android:text="내 위치 찾기"/>
 
         <fragment
             android:id="@+id/main_map"
@@ -34,7 +29,7 @@
             android:layout_margin="8dp"
             app:navermap_latitude="37.5666805"
             app:navermap_longitude="126.9784147"
-            app:navermap_zoom="8"
+            app:navermap_zoom="15"
             app:navermap_mapType="Terrain"
             android:name="com.naver.maps.map.MapFragment" />
 
