@@ -21,14 +21,6 @@
         android:orientation="vertical"
         tools:context=".presentation.MainActivity">
 
-        <Button
-            android:id="@+id/main_btn"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:backgroundTint="@color/white"
-            android:textColor="@color/black"
-            android:layout_margin="8dp"
-            android:text="내 위치 찾기"/>
 
         <fragment
             android:id="@+id/main_map"
