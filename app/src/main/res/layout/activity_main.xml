@@ -12,6 +12,7 @@
         />
 
 
+
     </data>
     <LinearLayout
         android:id="@+id/linear"
@@ -27,7 +28,6 @@
             android:backgroundTint="@color/white"
             android:textColor="@color/black"
             android:layout_margin="8dp"
-            android:onClick="@{viewmodel::onClickHandler}"
             android:text="내 위치 찾기"/>
 
         <fragment

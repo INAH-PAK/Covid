@@ -5,12 +5,18 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 
+import android.app.Application;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraUpdate;
@@ -27,6 +33,8 @@ import com.wookie_soft.covid.databinding.ActivityMainBinding;
 import com.wookie_soft.covid.data.model.ApiResponse;
 import com.wookie_soft.covid.utils.SetViewModelFactory;
 
+import java.util.Objects;
+
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     ActivityMainBinding binding;
@@ -34,7 +42,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private MyVeiwModel vm;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private FusedLocationSource locationSource;
-    private Location mlocation;
+
+    private MainActivity mainActivity;
 
     private NaverMap naverMap;
 
@@ -51,8 +60,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         vm.getApiDataToNet();
 
         binding = DataBindingUtil.setContentView(this,R.layout.activity_main);
+        // lifecycle : Lifecylce을 나타내는 객체
+        // LifecycleOwner : 원래 액티비티의 AppCompatActivity는 내부적으로 LifecycleOwner를 구현하고 있습니다. 
+                        //  그래서 Activity는 lifecycle 객체를 직접 참조할 수 있음.
+                    // 정리하면, 액티비티나 프레그먼트의 라이프사이클을 분리하여 담은 객체를 말하고
+                        // 라이프 사이클 객체에 액티비티 상태를 제공해 줌.
+        // LifecycleObserver : Lifecycle로 부터 액티비티 상태변화에 대한 이벤트를 받는다.
 
+        binding.setLifecycleOwner(this);
         binding.setViewmodel(vm);
+
+
+        binding.mainBtn.setOnClickListener((v) -> onClickBtn());
 
 
         locationSource =
@@ -72,19 +91,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
 
-
-
-//
-//         final Observer<ApiLocation> userObserver = new Observer<ApiLocation>() {
-//             @Override
-//             public void onChanged(ApiLocation user) {
-//                 // 사용자의 위치 정보 변경시, 네이버 지도 좌표 업뎃. -> 반응형 코딩 ㄱㄱ
-//
-//             }
-//         };
-
-
     }
+
+    public void onClickBtn(){
+        LatLng coord = new LatLng(Objects.requireNonNull(locationSource.getLastLocation()));
+
+        Location location = locationSource.getLastLocation();
+
+        LocationOverlay locationOverlay = naverMap.getLocationOverlay();
+        locationOverlay.setVisible(true);
+        locationOverlay.setPosition(coord);
+        locationOverlay.setBearing(location.getBearing());
+
+        Toast.makeText(this, "하..", Toast.LENGTH_SHORT).show();
+        naverMap.moveCamera(CameraUpdate.scrollTo(coord));
+    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -110,10 +132,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @Override // 네이버 맵 객체 획득 후, 이벤트 코드.
-    public void onMapReady(@NonNull NaverMap naverMap) {
+    public void onMapReady(@NonNull NaverMap naverMap ) {
         this.naverMap = naverMap;
         naverMap.setNightModeEnabled(true);// 이쁜 야간모드 지원 ㅎㅎ
-
+        if(vm == null) {
+            Log.i(" ddd", "vm ===== null");
+            return;
+        }
         naverMap.setLocationSource(locationSource);
         // 요기서 마커 불러오고.. 말풍선도 만들기..
         naverMap.setLocationTrackingMode(LocationTrackingMode.Follow);
@@ -121,39 +146,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         naverMap.setMapType(NaverMap.MapType.Basic);
 
 
-
-
     }
-
-    public void getLocationSource(){
-
-        naverMap.addOnLocationChangeListener(new NaverMap.OnLocationChangeListener() {
-            @Override
-            public void onLocationChange(@NonNull Location location) {
-               mlocation.set(location);
-
-                LatLng coord = new LatLng(location);
-
-                LocationOverlay locationOverlay = naverMap.getLocationOverlay();
-                locationOverlay.setVisible(true);
-                locationOverlay.setPosition(coord);
-                locationOverlay.setBearing(location.getBearing());
-
-                naverMap.moveCamera(CameraUpdate.scrollTo(coord));
-
-
-
-            }
-        });
-
-    }
-
-
-
-
-
-
-
 
 
 }

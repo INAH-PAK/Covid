@@ -2,16 +2,16 @@ package com.wookie_soft.covid.presentation;
 
 
 import android.app.Application;
-import android.location.LocationManager;
+import android.location.Location;
 import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
-import com.naver.maps.map.LocationSource;
-import com.naver.maps.map.util.FusedLocationSource;
 import com.wookie_soft.covid.data.model.Data;
 import com.wookie_soft.covid.data.repository.ApiRepository;
 
@@ -26,28 +26,34 @@ public class MyVeiwModel extends AndroidViewModel {
     private ApiRepository repository;
     private Application application;
     List<Data> data;
-    private MutableLiveData<LocationSource> currentLocation;
+    public Location l;
+
+
+    //https://comoi.io/300
+    // MutableLiveData , LiveData
+    public MutableLiveData<Location> liveLocation; // 사용자의 현재 위치가 계속 업데이트되는 값.
+    public MutableLiveData<Location> insLocation; // 지도 이동용 값
+    public int i = 0;
 
     public MyVeiwModel(@NonNull Application application) {
         super(application);
         this.application = application;
         repository = new ApiRepository(application);
         data = repository.getAllData();
-
-
     }
     List<Data> getAllData(){
         return data;
     }
 
-    public MutableLiveData<String> getCurrentName() {
-        if (currentLocation == null) {
-            currentLocation = new MutableLiveData<LocationSource>();
-        }
-        return currentLocation;
-    }
 
-   // List<Marker> getAllLocation(){ return }
+    public void locationUpdate(Location location) {
+        if(liveLocation == null) {
+            l.setLatitude(37.5666805);
+            l.setLongitude(126.9784147);
+            liveLocation.postValue(l);
+        }
+            liveLocation.setValue(location);
+        }
 
     //insert
     @NonNull
@@ -59,26 +65,6 @@ public class MyVeiwModel extends AndroidViewModel {
     public void getApiDataToNet(){ //  레포지토리에서 레트로핏작업 해달라고 요청
          repository.getApiDataToNet();
     }
-
-    // 위치 값
-
-
-
-
-
-    // 버튼 클릭시 , 사용자의 현재 위치 업뎃
-    public void onClickHandler(View view) {
-        Log.i("Ddd", "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-        // 사용자의 현재 위치 값으로 지도 이동
-
-
-
-        Log.i("Ddd", location.getLastLocation().toString());
-        Log.i("Ddd", location.getLastLocation().getLatitude()+"");
-
-    }
-
-
 
 
 
